@@ -4,8 +4,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer, RecipeSerializer, IngredientNameSerializer, IngredientModelSerializer, PostImageSerializer, CategorySerializer, TagSerializer, FavoriteSerializer, ReviewSerializer, RoleRequestSerializer
-from app.models import CustomUser, Recipe, IngredientName, IngredientModel, PostImage, Category, Tag, Favorite, Review, RoleRequest
+from .serializers import UserSerializer, RecipeSerializer, IngredientNameSerializer, IngredientModelSerializer, PostImageSerializer, CategorySerializer, TagSerializer, FavoriteSerializer, ReviewSerializer, RoleRequestSerializer, ProductSerializer, OrderSerializer, OrderItemSerializer
+from app.models import CustomUser, Recipe, IngredientName, IngredientModel, PostImage, Category, Tag, Favorite, Review, RoleRequest, Product, OrderItem, Order
 from rest_framework import viewsets, status,permissions,generics,filters,parsers
 from django_filters.rest_framework import DjangoFilterBackend,OrderingFilter
 from rest_framework.permissions import BasePermission
@@ -36,6 +36,8 @@ class IsRecipeAuthorOrAdmin(BasePermission):
 class UserViewSet(viewsets.ModelViewSet):#To view all users
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
 
 class TagViewSet(viewsets.ModelViewSet):#To view all tags
     queryset = Tag.objects.all()
@@ -201,3 +203,44 @@ class PostImageView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def get_permissions(self):
+        """Assign different permissions based on actions."""
+        if self.action in ['create', 'update', 'partial_update']:
+            return [IsChefOrAdmin()]
+        elif self.action == 'destroy':
+            return [IsAdminUser()]
+        return [permissions.AllowAny()]  # Anyone can view
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+    def get_permissions(self):
+        """Assign different permissions based on actions."""
+        if self.action in ['create', 'update', 'partial_update']:
+            return [IsChefOrAdmin()]
+        elif self.action == 'destroy':
+            return [IsAdminUser()]
+        return [permissions.AllowAny()]  # Anyone can view
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class OrderItemViewSet(viewsets.ModelViewSet):
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+
+    def get_permissions(self):
+        """Assign different permissions based on actions."""
+        if self.action in ['create', 'update', 'partial_update']:
+            return [IsChefOrAdmin()]
+        elif self.action == 'destroy':
+            return [IsAdminUser()]
+        return [permissions.AllowAny()]  # Anyone can view

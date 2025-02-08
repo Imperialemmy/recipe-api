@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import CustomUser,Recipe,IngredientName,IngredientModel,PostImage,Category,Tag,Favorite,Review, RoleRequest
+from app.models import CustomUser,Recipe,IngredientName,IngredientModel,PostImage,Category,Tag,Favorite,Review, RoleRequest, Order, OrderItem, Product
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -87,3 +87,20 @@ class RoleRequestSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'requested_role', 'approved']
         read_only_fields = ['user', 'approved']
 
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'product', 'quantity', 'order', 'price']
+
+class OrderSerializer(serializers.ModelSerializer):
+    order_items = OrderItemSerializer(many=True, read_only=True)
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'created_at', 'updated_at','order_items']
+        read_only_fields = ['created_at', 'updated_at']
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'description', 'image', 'price', 'stock','created_at']
+        read_only_fields = ['created_at']

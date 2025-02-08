@@ -11,6 +11,9 @@ router.register(r'all_tags', views.TagViewSet, basename='Tags')#To view all the 
 router.register(r'all_categories', views.CategoryViewSet, basename='categories')#To view all the categories
 router.register(r'my_favourites', views.FavoriteViewSet, basename='favourites')#To view all your favourites
 router.register(r'role-requests', views.RoleRequestViewSet, basename='role-requests')
+router.register(r'products', views.ProductViewSet)
+router.register(r'orders', views.OrderViewSet)
+router.register(r'order-items', views.OrderItemViewSet)
 
 
 # Nested Routers (Corrected)
