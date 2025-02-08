@@ -100,6 +100,7 @@ class IngredientModel(models.Model):
     alternative_ingredient = models.ForeignKey(IngredientName, on_delete=models.CASCADE, related_name='alternative_ingredient_model_set',null=True, blank=True)
     alternative_ingredient_quantity = models.CharField(max_length=50, blank=True, null=True)
     alternative_ingredient_unit = models.CharField(max_length=50, blank=True, null=True)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='ingredient_models', blank=True, null=True)
 
     class Meta:
         unique_together = ('name', 'recipe')  # Prevent duplicate ingredients in a recipe
@@ -144,6 +145,16 @@ class Favorite(models.Model):
         return f"{self.user.username} favorited {self.recipe.title}"
 
 
+
+class ProductCategories(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -151,6 +162,7 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0)  # Number of items available
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    category = models.ForeignKey(ProductCategories, on_delete=models.CASCADE, related_name='products',default='')
 
     def __str__(self):
         return self.name

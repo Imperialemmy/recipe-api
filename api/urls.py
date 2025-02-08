@@ -14,6 +14,7 @@ router.register(r'role-requests', views.RoleRequestViewSet, basename='role-reque
 router.register(r'products', views.ProductViewSet)
 router.register(r'orders', views.OrderViewSet)
 router.register(r'order-items', views.OrderItemViewSet)
+router.register(r'product_categories', views.ProductCategoriesViewSet)
 
 
 # Nested Routers (Corrected)

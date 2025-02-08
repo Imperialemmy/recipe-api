@@ -4,19 +4,15 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer, RecipeSerializer, IngredientNameSerializer, IngredientModelSerializer, PostImageSerializer, CategorySerializer, TagSerializer, FavoriteSerializer, ReviewSerializer, RoleRequestSerializer, ProductSerializer, OrderSerializer, OrderItemSerializer
-from app.models import CustomUser, Recipe, IngredientName, IngredientModel, PostImage, Category, Tag, Favorite, Review, RoleRequest, Product, OrderItem, Order
+from .serializers import UserSerializer, RecipeSerializer, IngredientNameSerializer, IngredientModelSerializer, PostImageSerializer, CategorySerializer, TagSerializer, FavoriteSerializer, ReviewSerializer, RoleRequestSerializer, ProductSerializer, OrderSerializer, OrderItemSerializer,ProductCategoriesSerializer
+from app.models import CustomUser, Recipe, IngredientName, IngredientModel, PostImage, Category, Tag, Favorite, Review, RoleRequest, Product, OrderItem, Order,ProductCategories
 from rest_framework import viewsets, status,permissions,generics,filters,parsers
 from django_filters.rest_framework import DjangoFilterBackend,OrderingFilter
 from rest_framework.permissions import BasePermission
-from .permissions import IsAdminUser, IsChefOrAdmin
-from rest_framework.pagination import PageNumberPagination
+from .permissions import IsAdminUser, IsChefOrAdmin,IsRecipeAuthor
+from.paginations import CustomPageNumberPagination,ProductsPagePagination
+from rest_framework.parsers import MultiPartParser, FormParser
 
-
-class CustomPageNumberPagination(PageNumberPagination):
-    page_size = 3  # Default items per page
-    page_size_query_param = 'page_size'  # Allows users to specify page size
-    max_page_size = 6  # Limits max items per page
 
 
 
@@ -87,7 +83,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['title', 'created_at', 'rating']
     pagination_class = CustomPageNumberPagination
-    # parser_classes = (parsers.MultiPartParser,)
 
     def get_permissions(self):
         if self.action in ['create']:  # Chef can only create
@@ -123,10 +118,11 @@ class IngredientNameViewSet(viewsets.ModelViewSet):
 class IngredientModelViewSet(viewsets.ModelViewSet): #api/recipe/recipe_pk/ingredients_model
     serializer_class = IngredientModelSerializer
     filter_backends = [DjangoFilterBackend]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsRecipeAuthor]
     def get_queryset(self):
         recipe_pk = self.kwargs['recipe_pk']  # Get recipe_pk from URL
         return IngredientModel.objects.filter(recipe_id=recipe_pk)
+
 
 
 
@@ -207,7 +203,13 @@ class PostImageView(APIView):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter,]
+    filterset_fields = {
+        'category': ['exact'],  # Exact match for categories
+    }
+    search_fields = ['name', 'description']
+    pagination_class = ProductsPagePagination
+    parser_classes = (MultiPartParser, FormParser)
     def get_permissions(self):
         """Assign different permissions based on actions."""
         if self.action in ['create', 'update', 'partial_update']:
@@ -244,3 +246,17 @@ class OrderItemViewSet(viewsets.ModelViewSet):
         elif self.action == 'destroy':
             return [IsAdminUser()]
         return [permissions.AllowAny()]  # Anyone can view
+
+class ProductCategoriesViewSet(viewsets.ModelViewSet):
+    queryset = ProductCategories.objects.all()
+    serializer_class = ProductCategoriesSerializer
+
+    def get_permissions(self):
+        """Assign different permissions based on actions."""
+        if self.action in ['create', 'update', 'partial_update']:
+            return [IsChefOrAdmin()]
+        elif self.action == 'destroy':
+            return [IsAdminUser()]
+        return [permissions.AllowAny()]  # Anyone can view
+
+

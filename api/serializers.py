@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import CustomUser,Recipe,IngredientName,IngredientModel,PostImage,Category,Tag,Favorite,Review, RoleRequest, Order, OrderItem, Product
+from app.models import CustomUser,Recipe,IngredientName,IngredientModel,PostImage,Category,Tag,Favorite,Review, RoleRequest, Order, OrderItem, Product, ProductCategories
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -62,7 +62,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 class IngredientModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientModel
-        fields = ['id', 'name', 'recipe', 'quantity', 'unit', 'order', 'alternative_ingredient', 'alternative_ingredient_quantity', 'alternative_ingredient_unit']
+        fields = ['id', 'name', 'recipe', 'quantity', 'unit', 'order', 'alternative_ingredient', 'alternative_ingredient_quantity', 'alternative_ingredient_unit', 'author']
 
 
 
@@ -102,5 +102,11 @@ class OrderSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'description', 'image', 'price', 'stock','created_at']
+        fields = ['id', 'name', 'price', 'description', 'image', 'price', 'stock','created_at', 'category']
         read_only_fields = ['created_at']
+
+
+class ProductCategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductCategories
+        fields = ['id', 'name', 'description']
