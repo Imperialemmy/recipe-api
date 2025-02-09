@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -155,3 +156,7 @@ DJOSER = {
         'user_create': 'app.serializers.CustomUserSerializer',
     },
 }
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MEDIA_URL = '/post_images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'post_images')
