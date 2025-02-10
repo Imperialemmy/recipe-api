@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,17 +81,22 @@ WSGI_APPLICATION = 'rAPI.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
+
+
 DATABASES = {
 'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'recipeapi',
-        'USER': 'postgres',
-        'PASSWORD': 'Seun@112',
-        'HOST': 'localhost',  # or your PostgreSQL server IP
+        'NAME': 'todo_1qkr',
+        'USER': 'todo_1qkr_user',
+        'PASSWORD': 'YWrE5sRkiPoONeM9Du1a8UmZVbVxKgPi',
+        'HOST': 'dpg-cu92i03qf0us73db9q8g-a',  # or your PostgreSQL server IP
         'PORT': '5432',  # Default PostgreSQL port
     }
 }
-
+database_url = os.environ.get("DATABASE_URL")
+DATABASES["default"] = dj_database_url.parse('postgresql://todo_1qkr_user:YWrE5sRkiPoONeM9Du1a8UmZVbVxKgPi@dpg-cu92i03qf0us73db9q8g-a.oregon-postgres.render.com/todo_1qkr')
+#
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
